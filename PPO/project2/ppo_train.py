@@ -157,7 +157,6 @@ def compute_approx_kl(log_probs: torch.Tensor,ref_log_probs: torch.Tensor,action
 # A(T-1) = R(T-1) + gam*V(T) - V(T-1) + gam*lam*A(T) 知道A(T)可计算A(T-1) 依次类推
 # returns(t) = A(t) + V(t) = = R(t) + gam * (V(t+1) + lam * A(t+1))
 def get_advantages_and_returns(values: torch.Tensor,rewards: torch.Tensor,action_mask: torch.Tensor,gamma: float,lambd: float):
-    
     lastgaelam = 0
     advantages_reversed = []
     response_length = rewards.size(1)
