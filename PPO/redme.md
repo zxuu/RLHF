@@ -3,7 +3,7 @@
 PPO（Proximal Policy Optimization）是一种基于策略梯度的强化学习算法，用于训练策略网络以最大化预期回报。
 PPO是一种基于策略梯度的优化方法，其核心创新点在于引入了一个“剪切”概率比率的目标函数，从而限制了策略更新的幅度，避免了过大的策略更新引起的不稳定性。这一目标函数能够通过多次小批量的随机梯度上升优化，而无需复杂的二阶优化算法，如TRPO所需的共轭梯度方法。具体而言，PPO通过在每次策略更新时使用“剪切”操作来抑制更新过度的策略行为，从而保证优化过程中的渐进性和稳定性。
 
-# 2. PPO的目标函数 (Clipped Surrogate Objective)
+## 2. PPO的目标函数 (Clipped Surrogate Objective)
 论文链接：[Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
 
 **裁剪：**
@@ -20,7 +20,7 @@ $$r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s
 
 通过这种“剪切”操作，PPO保证了每次策略更新的幅度不会过大，从而提高了训练的稳定性。
 
-## 2. LLM中ppo算法伪代码
+## 3. LLM中ppo算法伪代码
 **输入数据：** 输入就是prompt，actor模型根据prompt生成response，reward模型对prompt和response进行打分，critic模型对prompt和response进行打分。
 ```python
 import torch
@@ -79,5 +79,5 @@ for batch_prompt in prompt_dataset:
 ```
 **流程图如下：**
 <p style="text-align: center;">
-  <img src="img/ppo2.svg" alt="PPO流程图" style="width: 75%;">
+  <img src="img/ppo2.svg" alt="PPO流程图" style="width: 40%;">
 </p>
