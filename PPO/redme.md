@@ -60,4 +60,6 @@ for batch_prompt in prompt_dataset:
         optimizer.zero_grad()
 ```
 **流程图如下：**
-![PPO流程图](img/PPO.svg)
+<p style="text-align: center;">
+  <img src="img/PPO.svg" alt="PPO流程图" style="width: 75%;">
+</p>
