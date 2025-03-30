@@ -5,11 +5,16 @@ PPO是一种基于策略梯度的优化方法，其核心创新点在于引入�
 
 # 2. PPO的目标函数 (Clipped Surrogate Objective)
 论文链接：[Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
+
 **裁剪：**
 PPO改进了TRPO，通过引入一个剪切操作来避免策略更新过大，同时保持相对简单的实现（KL散度约束->裁剪）。PPO的核心目标函数是：
+
 $$L_{\text{CLIP}}(\theta) = \mathbb{E}_{t} \left[ \min \left( r_t(\theta) A_t, \text{clip} \left( r_t(\theta), 1 - \epsilon, 1 + \epsilon \right) A_t \right) \right]$$
+
 * $r_t(\theta)$ 是当前策略与旧策略的概率比率：
+
 $$r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)}$$
+
 * $\text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon)$ 是对概率比率进行剪切操作，防止它超出预定的范围 $[1 - \epsilon, 1 + \epsilon]$，其中 $\epsilon$ 是一个超参数，常取值为 0.2。
 * 目标函数的形式确保了即使 $r_t(\theta)$ 超出了该范围，也不会对目标函数产生过大的影响。
 
@@ -74,5 +79,5 @@ for batch_prompt in prompt_dataset:
 ```
 **流程图如下：**
 <p style="text-align: center;">
-  <img src="img/PPO.svg" alt="PPO流程图" style="width: 75%;">
+  <img src="img/ppo2.svg" alt="PPO流程图" style="width: 75%;">
 </p>
