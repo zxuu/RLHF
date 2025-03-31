@@ -23,14 +23,14 @@ $$\tilde{r}_i^{\text{index}(j)} = \frac{r_i - \text{mean}(R)}{\text{std}(R)}$$
 
 GRPO的优势计算方式有两种：
 
-1. 过程监督下，将每个标记的优势计算为后续步骤归一化奖励的总和
+#### 1.过程监督下，将每个标记的优势计算为后续步骤归一化奖励的总和
 
 $$\hat{A}_{i,t} = \sum_{\text{index}(j) \geq t} \tilde{r}_i^{\text{index}(j)}$$
 
 PPO的reward模型的值只是根据最后一个token上算出来的，根据最后一个token算出来reward值。不是算每个token的奖励值。
 GRPO的贡献：提出了一个不需要训练状态价值网络，就可以估算每个token优势值的方法。相当于给每个token赋予一个奖励值r，只不过是从batch中每条数据的（reward值-平均值）/标准差。优势Advantage是后续token奖励值总和。
 
-2. 结果监督下，每个输出的所有 token 的优势都是归一化后的最终奖励
+#### 2.结果监督下，每个输出的所有 token 的优势都是归一化后的最终奖励
 
 $$\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
 
