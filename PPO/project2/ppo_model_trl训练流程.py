@@ -51,6 +51,9 @@ class Critic(nn.Module):
 
 
 def compute_policy_loss(log_probs, old_log_probs, advantages, action_mask=None, clip_eps=0.2):
+    '''
+    重要性采样的同时进行裁剪
+    '''
     ratio = (log_probs - old_log_probs).exp()
     surr1 = ratio * advantages
     surr2 = ratio.clamp(1.0 - clip_eps, 1.0 + clip_eps) * advantages
@@ -66,6 +69,7 @@ def compute_value_loss(values, old_values, returns, action_mask=None, clip_eps: 
     # 这个损失函数的目标是让价值模型更好地预测每个状态的价值，从而指导演员模型的学习。
     '''
     if clip_eps is not None:
+        # 将 values 限制在 old_values ± cliprange_value 范围内，以防止过大的更新
         values_clipped = old_values + (values - old_values).clamp(-clip_eps, clip_eps)
         surr1 = (values_clipped - returns) ** 2
         surr2 = (values - returns) ** 2
