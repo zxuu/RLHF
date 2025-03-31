@@ -1,32 +1,48 @@
 # GRPO,Group Relative Policy Optimization
 ## 与PPO的核心区别(优势计算方式不同)
-**在PPO中，优势 $A_t$ 通常是通过广义优势估计（GAE）来计算的，它基于单个输出的值函数。而在GRPO中，优势的计算基于组奖励 $\hat{A}_{i,t}$，即：**
+在PPO中，优势 $A_t$ 通常是通过广义优势估计（GAE）来计算的，它基于单个输出的值函数。而在GRPO中，优势的计算基于组奖励 $\hat{A}_{i,t}$，即：
+
 $$\hat{A}_{i,t} = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
+
 其中：
 - $r_i$ 是针对每个样本输出 $o_i$ 计算的奖励。
 - $\text{mean}(r)$ 是该组的平均奖励。
 - $\text{std}(r)$ 是该组的标准差。
+
 ## token奖励r
+
 组级别的奖励作为组内每一步动作(生成next word)的奖励值。
+
 $$\tilde{r}_i^{\text{index}(j)} = \frac{r_i - \text{mean}(R)}{\text{std}(R)}$$
+
 其中：
 - $r_i$ 是针对每个样本输出 $o_i$ 计算的奖励。
 - $\text{mean}(R)$ 是所有组的平均奖励。
+
 ## token优势Advantage
+
 GRPO的优势计算方式有两种：
+
 1. 过程监督下，将每个标记的优势计算为后续步骤归一化奖励的总和
+
 $$\hat{A}_{i,t} = \sum_{\text{index}(j) \geq t} \tilde{r}_i^{\text{index}(j)}$$
+
 PPO的reward模型的值只是根据最后一个token上算出来的，根据最后一个token算出来reward值。不是算每个token的奖励值。
 GRPO的贡献：提出了一个不需要训练状态价值网络，就可以估算每个token优势值的方法。相当于给每个token赋予一个奖励值r，只不过是从batch中每条数据的（reward值-平均值）/标准差。优势Advantage是后续token奖励值总和。
+
 2. 结果监督下，每个输出的所有 token 的优势都是归一化后的最终奖励
+
 $$\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
+
 # GRPO过程
+
 <p style="text-align: center;">
   <img src="img/GRPO过程.png" alt="GRPO过程" style="width: 70%;">
   <figcaption style="text-align: center;">GRPO过程</figcaption>
 </p>
 
 **伪代码：**
+
 ```python
 for _ in range(num_iterations):
     reference_model = copy.deepcopy(policy_model)
@@ -111,7 +127,9 @@ flowchart TD
 # <center>DeepSeek-R1</center>
 ## 1. deepseek-R1-Zero
 纯强化学习(GRPO)
+
 **<span style="color:red;">缺点</span>**：<span style="color:red;">中英文混乱、格式混乱</span>
+
 ## 2. deepseek-R1训练流程
 引用：[DeepSeek-R1 技术报告解读](https://zhuanlan.zhihu.com/p/19868935152)
 
@@ -122,7 +140,9 @@ flowchart TD
 | 蒸馏小模型 | 直接用上面的 80w 数据进行SFT |
 
 **第一个RL(GRPO):** 针对推理任务（数学、代码等）的强化学习。根据有固定答案的任务设计奖励函数。
+
 **第二个RL(常规RL):** 常规的强化学习。融入人类偏好奖励模型
+
 - 语言一致性：目标语言的占比
 
 <p style="text-align: center;">
