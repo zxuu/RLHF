@@ -33,6 +33,7 @@ DPO（直接偏好优化）算法的推导过程主要围绕从强化学习目�
    用最优策略 $\pi_{r}$、参考策略 $\pi_{ref}$ 以及配分函数 $Z(\cdot)$ 来表达。  
 
 5. **奖励函数带入到BT模型中（或Plackett-Luc模型）**：  
+
    Bradley-Terry模型：  
 
    $$p^{*}(y_1 \succ y_2|x) = \frac{\exp(r^{*}(x, y_1))}{\exp(r^{*}(x, y_1)) + \exp(r^{*}(x, y_2))}$$  
@@ -48,7 +49,7 @@ DPO（直接偏好优化）算法的推导过程主要围绕从强化学习目�
    $$  
 
    最终的DPO算法loss为：  
-   
+
    $$
    \mathcal{L}_{\text{DPO}}(\pi_{\theta} ; \pi_{\text{ref}}) = - \mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma \left( \beta \log \frac{\pi_{\theta}(y_w | x)}{\pi_{\text{ref}}(y_w | x)} - \beta \log \frac{\pi_{\theta}(y_l | x)}{\pi_{\text{ref}}(y_l | x)} \right) \right]
    $$
