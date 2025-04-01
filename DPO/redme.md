@@ -7,29 +7,51 @@
 > 就是想把reward model去掉，将偏好融入损失里面
 DPO无需显式地构建一个奖励模型，而是通过训练语言模型使其最大化符合人类偏好的策略（把对偏好对的建模融入到策略里面）
 
-## 1. 推导过程
-DPO（直接偏好优化）算法的推导过程主要围绕从强化学习目标出发，通过一系列变换得到最优策略及目标函数，以下是大致推导过程总结：
-1. **确定强化学习目标**：从与先前研究相同的强化学习目标出发，在一般奖励函数\(r^{-}\)下，对受KL散度约束的奖励最大化目标进行优化，**目标函数**为:
-\[\max _{\pi} \mathbb{E}_{x \sim \mathcal{D}, y \sim \pi}[r(x, y)] - \beta \mathbb{D}_{KL}[\pi(y | x) || \pi_{ref}(y | x)]\]
-其中\(\pi\)为策略，\(\mathcal{D}\)为数据分布，\(r(x, y)\)为奖励函数，\(\beta\)为参数，\(\pi_{ref}(y | x)\)为参考策略。
-2. **推导最优策略形式**：借鉴先前研究[···]，可以得出上述目标的最优解形式为
-\[\pi_{r}(y | x)=\frac{1}{Z(x)} \pi_{ref }(y | x) \exp \left(\frac{1}{\beta} r(x, y)\right)\]
-其中\(Z(x)=\sum_{y} \pi_{ref}(y | x) \exp (\frac{1}{\beta} r(x, y))\)是配分函数。完整推导见附录A.1。
-3. **分析配分函数问题**：即便使用真实奖励函数\(r^{*}\)的最大似然估计\(r_{\phi}\)，估计配分函数\(Z(x)\)的计算成本仍然很高，使得这种表示形式在实际中难以应用。
-4. **重新表示奖励函数**：对最优策略公式两边取对数并进行代数运算，将奖励函数\(r(x, y)\)表示为
-\[r(x, y)=\beta \log \frac{\pi_{r}(y | x)}{\pi_{ref }(y | x)}+\beta \log Z(x)\]
-用最优策略\(\pi_{r}\)、参考策略\(\pi_{ref }\)以及配分函数\(Z(·)\)来表达。
-5. **奖励函数带入到BT模型中（或Plackett-Luc模型）**：
-Bradley-Terry模型：
-\[p^{*}(y_1 \succ y_2|x) = \frac{\exp(r^{*}(x, y_1))}{\exp(r^{*}(x, y_1)) + \exp(r^{*}(x, y_2))}\]
-将\(r(x, y)\)代入BT模型得到：
-\[\begin{align*}
-p^{*}(y_1 \succ y_2|x) &= \frac{\exp\left(\beta\log\frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)} + \beta\log Z(x)\right)}{\exp\left(\beta\log\frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)} + \beta\log Z(x)\right) + \exp\left(\beta\log\frac{\pi^{*}(y_2|x)}{\pi_{\text{ref}}(y_2|x)} + \beta\log Z(x)\right)}\\
-&= \frac{1}{1 + \exp\left(\beta\log\frac{\pi^{*}(y_2|x)}{\pi_{\text{ref}}(y_2|x)} - \beta\log\frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)}\right)}\\
-&= \sigma\left(\beta\log\frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)} - \beta\log\frac{\pi^{*}(y_2|x)}{\pi_{\text{ref}}(y_2|x)}\right).
-\end{align*}\]
-最终的DPO算法loss为：
-\[\mathcal{L}_{\text{DPO}}(\pi_{\theta} ; \pi_{\text{ref}}) = - \mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma \left( \beta \log \frac{\pi_{\theta}(y_w | x)}{\pi_{\text{ref}}(y_w | x)} - \beta \log \frac{\pi_{\theta}(y_l | x)}{\pi_{\text{ref}}(y_l | x)} \right) \right]\]
+---
+
+## 1. 推导过程  
+DPO（直接偏好优化）算法的推导过程主要围绕从强化学习目标出发，通过一系列变换得到最优策略及目标函数，以下是大致推导过程总结：  
+
+1. **确定强化学习目标**：从与先前研究相同的强化学习目标出发，在一般奖励函数 $r^{-}$ 下，对受KL散度约束的奖励最大化目标进行优化，**目标函数**为：  
+   $$
+   \max_{\pi} \mathbb{E}_{x \sim \mathcal{D}, y \sim \pi}[r(x, y)] - \beta \mathbb{D}_{KL}[\pi(y | x) || \pi_{ref}(y | x)]
+   $$  
+   其中 $\pi$ 为策略，$\mathcal{D}$ 为数据分布，$r(x, y)$ 为奖励函数，$\beta$ 为参数，$\pi_{ref}(y | x)$ 为参考策略。  
+
+2. **推导最优策略形式**：借鉴先前研究[···]，可以得出上述目标的最优解形式为  
+   $$
+   \pi_{r}(y | x) = \frac{1}{Z(x)} \pi_{ref}(y | x) \exp \left( \frac{1}{\beta} r(x, y) \right)
+   $$  
+   其中 $Z(x) = \sum_{y} \pi_{ref}(y | x) \exp \left( \frac{1}{\beta} r(x, y) \right)$ 是配分函数。完整推导见附录A.1。  
+
+3. **分析配分函数问题**：即便使用真实奖励函数 $r^{*}$ 的最大似然估计 $r_{\phi}$，估计配分函数 $Z(x)$ 的计算成本仍然很高，使得这种表示形式在实际中难以应用。  
+
+4. **重新表示奖励函数**：对最优策略公式两边取对数并进行代数运算，将奖励函数 $r(x, y)$ 表示为  
+   $$
+   r(x, y) = \beta \log \frac{\pi_{r}(y | x)}{\pi_{ref}(y | x)} + \beta \log Z(x)
+   $$  
+   用最优策略 $\pi_{r}$、参考策略 $\pi_{ref}$ 以及配分函数 $Z(\cdot)$ 来表达。  
+
+5. **奖励函数带入到BT模型中（或Plackett-Luc模型）**：  
+   Bradley-Terry模型：  
+   $$
+   p^{*}(y_1 \succ y_2|x) = \frac{\exp(r^{*}(x, y_1))}{\exp(r^{*}(x, y_1)) + \exp(r^{*}(x, y_2))}
+   $$  
+   将 $r(x, y)$ 代入BT模型得到：  
+   $$
+   \begin{align*}
+   p^{*}(y_1 \succ y_2|x) &= \frac{\exp\left( \beta \log \frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)} + \beta \log Z(x) \right)}{\exp\left( \beta \log \frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)} + \beta \log Z(x) \right) + \exp\left( \beta \log \frac{\pi^{*}(y_2|x)}{\pi_{\text{ref}}(y_2|x)} + \beta \log Z(x) \right)} \\
+   &= \frac{1}{1 + \exp\left( \beta \log \frac{\pi^{*}(y_2|x)}{\pi_{\text{ref}}(y_2|x)} - \beta \log \frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)} \right)} \\
+   &= \sigma\left( \beta \log \frac{\pi^{*}(y_1|x)}{\pi_{\text{ref}}(y_1|x)} - \beta \log \frac{\pi^{*}(y_2|x)}{\pi_{\text{ref}}(y_2|x)} \right).
+   \end{align*}
+   $$  
+   最终的DPO算法loss为：  
+   $$
+   \mathcal{L}_{\text{DPO}}(\pi_{\theta} ; \pi_{\text{ref}}) = - \mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma \left( \beta \log \frac{\pi_{\theta}(y_w | x)}{\pi_{\text{ref}}(y_w | x)} - \beta \log \frac{\pi_{\theta}(y_l | x)}{\pi_{\text{ref}}(y_l | x)} \right) \right]
+   $$
+
+---
+
 
 ## 损失loss代码
 <p style="text-align: center;">
