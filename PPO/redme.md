@@ -92,7 +92,7 @@ for batch_prompt in prompt_dataset:
     # 将批次提示和生成的响应拼接在一起
     batch_data = concat(batch_prompt, batch_response)
     # 使用奖励模型对拼接后的数据进行打分
-    batch_scores = reward_model(batch_data)
+    batch_scores = reward_model(batch_data)    # 裁剪
 
     # 前向传播当前policy模型，得到所有可能动作/词元的完整概率分布、实际生成序列的动作/词元的具体概率
     old_actor_all_probs, old_actor_probs = actor_model.forward(batch_data)
@@ -123,12 +123,12 @@ for batch_prompt in prompt_dataset:
         new_critic_all_values = critic_model.forward(batch_data)
 
         # 计算新、旧policy概率比
-        ratio = new_actor_probs / old_actor_probs
+        ratio = new_actor_probs / old_actor_probs    # 裁剪
         # 计算actor损失，即PPO损失
         loss_ppo = torch.mean(-advantages * ratio)
 
         # 计算critic损失，即状态值损失
-        loss_state_value = torch.mean((returns - new_critic_all_values)**2)
+        loss_state_value = torch.mean((returns - new_critic_all_values)**2)    # 裁剪
 
         # 计算总损失，由actor损失和critic损失加权求和得到
         loss = loss_ppo + value_loss_rate * loss_state_value
