@@ -80,7 +80,7 @@ $$ L_{\text{KL Penalty}}(\theta) = \mathbb{E}{t} \left[ r_t(\theta) A_t - \beta 
 
 这种方法在某些情况下可以提供更好的控制，但在实验中，剪切目标函数的效果通常要优于KL惩罚。
 
-## 输入数据
+## 3. 输入数据
 数据的数据即输入问题
 数据路径：data/ppo_data.jsonl
 ```json
@@ -151,6 +151,34 @@ for batch_prompt in prompt_dataset:
         optimizer.zero_grad()
 ```
 # 4. LLM中PPO算法流程图
-<p style="text-align: center;">
-  <img src="img/ppo2.svg" alt="PPO流程图" style="width: 40%;">
-</p>
+```mermaid
+flowchart TD
+    A["开始"] --> B["加载Prompt批次数据"]
+    B --> C["生成响应Response"]
+    C --> D["拼接Prompt+Response"]
+    D --> E["reward模型打分"] & F["actor模型前向传播"] & G["reference模型前向传播"] & H["critic模型前向传播"]
+    F --> I["计算KL散度"]
+    G --> I
+    E --> J["计算最终奖励
+    reward值只加在最后的位置"]
+    I --> J
+    H --> K["计算GAE优势"]
+    J --> K
+    K --> L["计算回报值return
+    供计算critic的loss"]
+    L --> M["训练循环开始"]
+    M --> N["actor模型前向传播"] & O["critic模型前向传播"]
+    N --> P["计算新旧actor_probs比率ratio"]
+    P --> Q["计算actor损失
+    GAE优势*ratio"]
+    O --> R["计算critic损失
+    return - new_values"]
+    Q --> S["计算总损失"]
+    R --> S
+    S --> T["反向传播更新"]
+    T --> U{"完成所有epoch?"}
+    U -- 否 --> M
+    U -- 是 --> V{"完成所有批次?"}
+    V -- 否 --> B
+    V -- 是 --> W["结束"]
+```

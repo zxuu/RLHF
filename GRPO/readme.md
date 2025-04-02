@@ -1,5 +1,5 @@
 # GRPO,Group Relative Policy Optimization
-## 与PPO的核心区别(优势计算方式不同)
+## 1. 与PPO的核心区别(优势计算方式不同)
 在PPO中，优势 $A_t$ 通常是通过广义优势估计（GAE）来计算的，它基于单个输出的值函数。而在GRPO中，优势的计算基于组奖励 $\hat{A}_{i,t}$，即：
 
 $$\hat{A}_{i,t} = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
@@ -34,7 +34,7 @@ GRPO的贡献：提出了一个不需要训练状态价值网络，就可以估�
 
 $$\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
 
-# GRPO过程
+# 2. GRPO过程
 
 <p style="text-align: center;">
   <img src="img/GRPO过程.png" alt="GRPO过程" style="width: 70%;">
@@ -42,7 +42,7 @@ $$\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
 </p>
 
 
-## 输入数据
+## 3. 输入数据
 以数学推理为例，输入数据为：问题+答案
 数据路径：data/grpo_data.jsonl
 ```json
@@ -51,7 +51,7 @@ $$\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
 ......
 ```
 
-**伪代码：**
+## 4. 伪代码
 
 ```python
 for _ in range(num_iterations):
