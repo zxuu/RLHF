@@ -1,4 +1,5 @@
-# 直接偏好优化DPO
+# 直接偏好优化(Direct Preference Optimization,DPO)
+论文链接：[Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
 ## 1. idea
 <p style="color:red; font-weight:bold; text-align:center;">是否可以绕过奖励模型和强化学习，直接从偏好对出发训练策略？</p>
 
