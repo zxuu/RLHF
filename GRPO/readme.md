@@ -41,6 +41,16 @@ $$\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \text{mean}(r)}{\text{std}(r)}$$
   <figcaption style="text-align: center;">GRPO过程</figcaption>
 </p>
 
+
+## 输入数据
+以数学推理为例，输入数据为：问题+答案
+数据路径：data/grpo_data.jsonl
+```json
+{"question_zh-cn":"纳塔利娅在 4 月份向 48 个朋友出售了视频片段，然后在 5 月份售出了一半的视频片段。娜塔莉亚在四月和五月总共卖出了多少个视频？", "answer_only":72}
+{"question_zh-cn":"翁靠做保姆每小时挣 12 美元。昨天，她只做了 50 分钟的保姆工作。她赚了多少钱？", "answer_only":10}
+......
+```
+
 **伪代码：**
 
 ```python

@@ -1,5 +1,5 @@
 # 直接偏好优化(Direct Preference Optimization,DPO)
-论文链接：[Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+论文链接：[Direct Preference Optimization: Your Language Model is Secretly a Reward Model](https://arxiv.org/abs/2305.18290)
 ## 1. idea
 <p style="color:red; font-weight:bold; text-align:center;">是否可以绕过奖励模型和强化学习，直接从偏好对出发训练策略？</p>
 
@@ -57,6 +57,15 @@ DPO（直接偏好优化）算法的推导过程主要围绕从强化学习目�
 
 ---
 
+## 输入数据格式
+> 数据路径：data/dpo_data.jsonl
+
+```json
+数据是偏好对或者多个排序回答。本例子使用偏好对。
+{"chose":"prompt+chose", "rejected":"prompt+rejected"}
+{"chose":"prompt+chose", "rejected":"prompt+rejected"}
+......
+```
 
 ## 损失loss代码
 <p style="text-align: center;">

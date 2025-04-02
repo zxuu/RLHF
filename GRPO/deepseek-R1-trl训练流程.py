@@ -1,3 +1,5 @@
+# 引用https://github.com/wyf3/llm_related/blob/main/deepseek_learn/deepseek_r1_train/deepseek_r1_train.py
+
 import re
 import torch
 from datasets import load_dataset, Dataset

@@ -1,3 +1,5 @@
+# from https://github.com/wyf3/llm_related/blob/main/ppo_from_scratch/ppo_train.py
+
 from transformers import AutoModelForCausalLM, AutoModel, AutoModelForSequenceClassification, AutoTokenizer
 from dataclasses import dataclass
 from typing import Optional, Union, Tuple

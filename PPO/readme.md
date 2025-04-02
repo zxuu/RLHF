@@ -80,7 +80,20 @@ $$ L_{\text{KL Penalty}}(\theta) = \mathbb{E}{t} \left[ r_t(\theta) A_t - \beta 
 
 这种方法在某些情况下可以提供更好的控制，但在实验中，剪切目标函数的效果通常要优于KL惩罚。
 
-## 3. LLM中ppo算法伪代码
+## 输入数据
+数据的数据即输入问题
+数据路径：data/ppo_data.jsonl
+```json
+{"prompt": "请问1+1等于多少？"}
+{"prompt": "PowerShell，如何知道BIOS中的虚拟化是否已禁用"}
+{"prompt": "为什么人们喜欢在水族馆里游泳，而不是在游泳池里？"}
+{"prompt": "你是一位营销专家。为Instagram reels写30个带有营销技巧的脚本。"}
+{"prompt": "为什么所有的镜子都是矩形的？"}
+{"prompt": "我们在受感染的植物根部可以找到哪一种，臭氧还是金子"}
+......
+```
+
+## 4. LLM中ppo算法伪代码
 **输入数据：** 输入就是prompt，actor模型根据prompt生成response，reward模型对prompt和response进行打分，critic模型对prompt和response进行打分。
 ```python
 import torch
