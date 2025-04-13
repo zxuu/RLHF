@@ -91,7 +91,7 @@ for _ in range(num_iterations):
             # 计算优势损失
             loss_adv = torch.mean(-advantages * ratio)
 
-            # 计算当前活动模型和参考模型之间的KL散度损失
+            # 计算当前活动模型和参考模型之间的KL散度损失(kl惩罚项，penalty)
             # per_token_kl = torch.exp(ref_all_probs - new_actor_all_probs) - (ref_all_probs - new_actor_all_probs) - 1
             loss_kl = compute_KL(new_actor_all_probs, ref_all_probs)
 
